@@ -15,7 +15,7 @@ function App() {
       setCurrentQuestion(null);
     }
     if (correct) {
-      setScore((score) => score + 1);
+      setScore((prevScore) => prevScore + 1);
     }
   }
 
@@ -24,7 +24,8 @@ function App() {
       <section>
         {currentQuestion ? (
           <Question
-            question={currentQuestion}
+            question={currentQuestion.question} // Pass only the question text
+            options={currentQuestion.options} // Pass options array
             onAnswered={handleQuestionAnswered}
           />
         ) : (

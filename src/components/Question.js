@@ -1,32 +1,43 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 
-function Question({ question, onAnswered }) {
+function Question({ question = "", options = [], onAnswered = () => { } }) {
   const [timeRemaining, setTimeRemaining] = useState(10);
 
-  // add useEffect code
+  useEffect(() => {
+    let timerId;
 
-  function handleAnswer(isCorrect) {
-    setTimeRemaining(10);
-    onAnswered(isCorrect);
-  }
+    if (timeRemaining > 0) {
+      timerId = setTimeout(() => {
+        setTimeRemaining(timeRemaining - 1);
+      }, 1000);
+    } else {
+      onAnswered(false);
+      setTimeRemaining(10);
+    }
 
-  const { id, prompt, answers, correctIndex } = question;
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [timeRemaining, onAnswered]);
 
   return (
-    <>
-      <h1>Question {id}</h1>
-      <h3>{prompt}</h3>
-      {answers.map((answer, index) => {
-        const isCorrect = index === correctIndex;
-        return (
-          <button key={answer} onClick={() => handleAnswer(isCorrect)}>
-            {answer}
-          </button>
-        );
-      })}
-      <h5>{timeRemaining} seconds remaining</h5>
-    </>
+    <div>
+      <h2>{question}</h2>
+      <p>Time Remaining: {timeRemaining} seconds</p>
+      <ul>
+        {options && options.map((option, index) => (
+          <li key={index}>{option}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
+
+Question.propTypes = {
+  question: PropTypes.string,
+  options: PropTypes.arrayOf(PropTypes.string),
+  onAnswered: PropTypes.func
+};
 
 export default Question;
